@@ -1,0 +1,55 @@
+!Cnt-Sw
+enable
+Configure Terminal
+hostname Cnt-Sw
+ip domain-name cisco.com
+enable secret ciscoenpass
+user HQadmin password ciscoclass
+crypto key generate rsa
+1024
+ip ssh version 2
+ip ssh authentication-retries 2
+ip ssh time-out 60
+ip default-gateway 172.16.15.9
+service password-encryption
+line vty 0 15
+login local
+transport input ssh
+!VLAN Config
+vlan 15
+name Servers
+vlan 30
+name PCs
+vlan 45
+name Native
+vlan 60
+name Management
+interface vlan 60
+ip address 172.16.15.10 255.255.255.248
+no shutdown
+!switchport config
+interface range fastEthernet 0/1-24
+shutdown
+interface range fastethernet 0/11-20
+switchport mode access
+switchport access vlan 15
+no shutdown
+interface range fastethernet 0/1-10
+switchport mode access
+switchport access vlan 30
+no shutdown
+!
+interface gigabitethernet 0/1
+switchport mode trunk
+switchport trunk native vlan 45
+no shutdown
+interface fastethernet 0/1
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky 
+switchport port-security violation restrict
+interface gigabitethernet 0/2
+no shutdown
+end
+copy running-config startup-config
+!

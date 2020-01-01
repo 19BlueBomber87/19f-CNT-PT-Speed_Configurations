@@ -1,0 +1,56 @@
+!19f-CNT-[Exercise Flow][Video]
+!Central
+!partial configuration set by exercise
+!Router_On_A_Stick
+enable
+Configure Terminal
+interface gigabitEthernet 0/0.15
+encapsulation dot1Q 15
+ip address 172.16.15.17 255.255.255.240
+no shutdown
+interface gigabitEthernet 0/0.30
+encapsulation dot1Q 30
+ip address 172.16.15.33 255.255.255.224
+no shutdown
+interface gigabitEthernet 0/0.45
+encapsulation dot1Q 45 native
+ip address 172.16.15.1 255.255.255.248
+no shutdown
+interface gigabitEthernet 0/0.60
+encapsulation dot1Q 60
+ip address 172.16.15.9 255.255.255.248
+no shutdown
+interface gigabitEthernet 0/0
+no shutdown
+!DHCP
+!ip dhcp excluded-address 172.16.15.33
+!ip dhcp excluded-address 172.16.15.63
+ip dhcp pool LAN
+network 172.16.15.32 255.255.255.224
+default-router 172.16.15.33
+router rip
+version 2
+network 172.16.15.0
+passive-interface gigabitEthernet 0/0.15
+passive-interface gigabitEthernet 0/0.30
+passive-interface gigabitEthernet 0/0.45
+passive-interface gigabitEthernet 0/0.60
+passive-interface serial 0/1/0
+ip route 0.0.0.0 0.0.0.0 serial 0/1/0
+access-list 1 permit 172.16.15.0 0.0.0.255 
+ip nat inside source static 172.16.15.18 209.165.200.227
+ip nat pool MARKKsNAT_POOL 209.165.200.225 209.165.200.226 netmask 255.255.255.252
+ip nat inside source list 1 pool MARKKsNAT_POOL overload 
+interface serial 0/0/0
+ip nat inside
+interface serial 0/0/1
+ip nat inside
+interface serial 0/1/0
+ip nat outside
+interface gigabitEthernet 0/0.15
+ip nat inside
+interface gigabitEthernet 0/0.30
+ip nat inside
+end
+copy running-config startup-config
+!
